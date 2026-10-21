@@ -24,7 +24,7 @@ Richiede macOS 14 Sonoma o successivo, su Mac Apple Silicon o Intel.
 - **Avvio al login** e **aggiornamenti automatici**.
 
 La cronologia resta sul tuo Mac, in `~/Library/Application Support/Pasteroo/history.json`.
-Niente viene inviato in rete.
+Non viene mai inviata in rete: l’unica connessione dell’app è il controllo degli aggiornamenti.
 
 ## Scaricare e avviare
 
