@@ -1,0 +1,6 @@
+.build/
+build/
+.DS_Store
+# Design references and screenshots stay local.
+Referance/
+Screenshot*.png
