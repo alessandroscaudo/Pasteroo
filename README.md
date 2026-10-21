@@ -44,7 +44,11 @@ Non viene mai inviata in rete: l’unica connessione dell’app è il controllo 
    ```
 
 4. L'icona del canguro compare nella barra dei menu. Pasteroo non ha icona nel Dock.
-5. Per l'incolla automatico, consenti a Pasteroo l'accesso in **Impostazioni di Sistema ›
+5. Alla prima copia macOS chiede se Pasteroo può leggere gli appunti, e senza intervento
+   lo richiede a ogni copia. Per non vederlo più: **Impostazioni di Sistema › Privacy e
+   sicurezza › Incolla da altre app**, imposta Pasteroo su **Consenti**, poi riavvia
+   Pasteroo. Le impostazioni dell'app hanno una scorciatoia per entrambe le cose.
+6. Per l'incolla automatico, consenti a Pasteroo l'accesso in **Impostazioni di Sistema ›
    Privacy e sicurezza › Accessibilità**. macOS lo chiede la prima volta che serve. Senza
    questo permesso l'elemento scelto viene solo copiato e lo incolli tu con ⌘V.
 
