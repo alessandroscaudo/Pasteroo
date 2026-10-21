@@ -12,8 +12,9 @@ let package = Package(
             name: "Pasteroo",
             dependencies: [.product(name: "Sparkle", package: "Sparkle")],
             path: "Sources/Pasteroo",
-            // build-app.sh puts Sparkle.framework in Contents/Frameworks.
-            linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]
+            // build-app.sh puts Sparkle.framework in Contents/Frameworks; `swift run` finds it next to the binary.
+            linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks",
+                                           "-Xlinker", "-rpath", "-Xlinker", "@loader_path"])]
         )
     ],
     swiftLanguageModes: [.v5]

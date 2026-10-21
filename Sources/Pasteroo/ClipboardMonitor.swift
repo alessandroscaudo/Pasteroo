@@ -16,6 +16,14 @@ final class ClipboardMonitor {
         .init("com.agilebits.onepassword"),
     ]
 
+    /// False when macOS (15.4+) asks the user before each programmatic read of the pasteboard,
+    /// i.e. Pasteroo is not set to Allow in Privacy & Security › Paste from Other Apps.
+    /// Changes there apply after Pasteroo restarts.
+    static var canReadFreely: Bool {
+        guard #available(macOS 15.4, *) else { return true }
+        return NSPasteboard.general.accessBehavior == .alwaysAllow
+    }
+
     init(store: ClipStore) {
         self.store = store
         lastChangeCount = pasteboard.changeCount

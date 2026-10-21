@@ -238,3 +238,15 @@ enum LoginItem {
         }
     }
 }
+
+extension NSApplication {
+    /// Quits and reopens Pasteroo, e.g. so a changed privacy setting takes effect.
+    func relaunch() {
+        let pid = ProcessInfo.processInfo.processIdentifier
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "while kill -0 \(pid) 2>/dev/null; do sleep 0.1; done; open \"$0\"", Bundle.main.bundlePath]
+        try? task.run()
+        terminate(nil)
+    }
+}

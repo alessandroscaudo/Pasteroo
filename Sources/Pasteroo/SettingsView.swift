@@ -154,6 +154,17 @@ private struct GeneralPane: View {
                     Row(title: "Record clipboard history", detail: "off = private mode") {
                         Toggle("", isOn: $recordHistory).labelsHidden()
                     }
+                    if !ClipboardMonitor.canReadFreely {
+                        Row(title: "Clipboard access",
+                            detail: "asked on every copy · allow, then restart") {
+                            HStack(spacing: 8) {
+                                PillButton(title: "Open settings") {
+                                    NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
+                                }
+                                PillButton(title: "Restart") { NSApp.relaunch() }
+                            }
+                        }
+                    }
                     Row(title: "Start at login", divider: false) {
                         Toggle("", isOn: $startAtLogin).labelsHidden()
                             .onChange(of: startAtLogin) { _, on in LoginItem.set(on) }
@@ -174,15 +185,10 @@ private struct GeneralPane: View {
                     Row(title: "Paste after choosing", detail: trusted || !autoPaste ? nil : "needs accessibility permission") {
                         HStack(spacing: 8) {
                             if autoPaste && !trusted {
-                                Button("Grant") {
+                                PillButton(title: "Grant") {
                                     Paster.requestPermission()
                                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
                                 }
-                                .buttonStyle(.plain)
-                                .font(Theme.label(11))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 12).frame(height: 24)
-                                .background(Capsule().fill(Theme.orb))
                             }
                             Toggle("", isOn: $autoPaste).labelsHidden()
                         }
@@ -198,6 +204,21 @@ private struct GeneralPane: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             trusted = Paster.isTrusted
         }
+    }
+}
+
+/// Small green capsule button for permission fixes.
+private struct PillButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(title, action: action)
+            .buttonStyle(.plain)
+            .font(Theme.label(11))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12).frame(height: 24)
+            .background(Capsule().fill(Theme.orb))
     }
 }
 
