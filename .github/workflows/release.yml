@@ -14,7 +14,7 @@ jobs:
     env:
       KEYCHAIN: build.keychain
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Import signing certificate
         env:
@@ -29,6 +29,9 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN"
           security list-keychains -d user -s "$KEYCHAIN" login.keychain
           rm "$RUNNER_TEMP/signing.p12"
+
+      - name: Test
+        run: swift test
 
       - name: Build
         run: VERSION="${GITHUB_REF_NAME#v}" ./scripts/build-app.sh

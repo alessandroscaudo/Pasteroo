@@ -225,11 +225,12 @@ private struct PillButton: View {
 private struct ShortcutRecorder: View {
     @AppStorage(Prefs.hotKeyDisplay) private var display = "⇧⌘V"
     @Local private var recording = false
+    @Local private var refused = false
     @Local private var monitor: Any? = nil
 
     var body: some View {
         Button { recording ? stop() : start() } label: {
-            Text(recording ? "type shortcut…" : display)
+            Text(recording ? (refused ? "not available, try another" : "type shortcut…") : display)
                 .font(Theme.label(12))
                 .foregroundStyle(recording ? .white : Theme.ink)
                 .padding(.horizontal, 14).frame(height: 28)
@@ -246,10 +247,17 @@ private struct ShortcutRecorder: View {
             if event.keyCode == 53 { stop(); return nil } // Esc cancels
             guard !flags.intersection([.command, .option, .control]).isEmpty,
                   let key = event.charactersIgnoringModifiers, !key.isEmpty else { return nil }
+            let code = Int(event.keyCode)
+            let modifiers = HotKey.carbonModifiers(from: flags)
+            let shown = HotKey.display(flags: flags, key: key == " " ? "Space" : key)
+            guard HotKey.isAllowed(display: shown) else {
+                refused = true
+                return nil
+            }
             let defaults = UserDefaults.standard
-            defaults.set(Int(event.keyCode), forKey: Prefs.hotKeyCode)
-            defaults.set(HotKey.carbonModifiers(from: flags), forKey: Prefs.hotKeyModifiers)
-            display = HotKey.display(flags: flags, key: key == " " ? "Space" : key)
+            defaults.set(code, forKey: Prefs.hotKeyCode)
+            defaults.set(modifiers, forKey: Prefs.hotKeyModifiers)
+            display = shown
             stop()
             return nil
         }
@@ -257,6 +265,7 @@ private struct ShortcutRecorder: View {
 
     private func stop() {
         recording = false
+        refused = false
         if let monitor { NSEvent.removeMonitor(monitor) }
         monitor = nil
     }

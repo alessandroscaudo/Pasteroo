@@ -26,6 +26,13 @@ final class HotKey {
                             GetApplicationEventTarget(), 0, &ref)
     }
 
+    /// Shortcuts that would take copy, paste and other basics away from every app.
+    private static let reserved: Set<String> = ["⌘C", "⌘V", "⌘X", "⌘Z", "⌘A", "⌘Q", "⌘W"]
+
+    /// Whether a shortcut may be used. Carbon gives no error when another app already
+    /// uses a combination, so only the basic editing shortcuts can be refused.
+    static func isAllowed(display: String) -> Bool { !reserved.contains(display) }
+
     func unregister() {
         if let ref { UnregisterEventHotKey(ref) }
         ref = nil

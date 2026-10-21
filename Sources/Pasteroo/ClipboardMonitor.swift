@@ -7,6 +7,10 @@ final class ClipboardMonitor {
     private let pasteboard = NSPasteboard.general
     private var lastChangeCount: Int
     private var timer: Timer?
+    /// Frontmost app at the previous poll: the copy may have happened there just before a switch.
+    private var previousApp: NSRunningApplication?
+    /// Longer texts are skipped: they bloat the history file and freeze the preview.
+    static let maxLength = 1_000_000
 
     /// Markers from nspasteboard.org that apps use to flag secrets and throwaway content.
     private static let skippedTypes: Set<NSPasteboard.PasteboardType> = [
@@ -44,6 +48,9 @@ final class ClipboardMonitor {
     }
 
     private func poll() {
+        let frontmost = NSWorkspace.shared.frontmostApplication
+        let before = previousApp
+        previousApp = frontmost
         let count = pasteboard.changeCount
         guard count != lastChangeCount else { return }
         lastChangeCount = count
@@ -52,12 +59,12 @@ final class ClipboardMonitor {
         let types = Set(pasteboard.types ?? [])
         guard types.isDisjoint(with: Self.skippedTypes) else { return }
 
-        let source = NSWorkspace.shared.frontmostApplication
-        if let id = source?.bundleIdentifier, Prefs.ignored.contains(where: { $0.bundleID == id }) {
+        let ignored = Set(Prefs.ignored.map(\.bundleID))
+        if [before, frontmost].contains(where: { $0?.bundleIdentifier.map(ignored.contains) == true }) {
             return
         }
-        guard let text = pasteboard.string(forType: .string),
+        guard let text = pasteboard.string(forType: .string), text.utf16.count <= Self.maxLength,
               !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        store.add(text, source: source)
+        store.add(text, source: frontmost)
     }
 }

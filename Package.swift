@@ -15,7 +15,8 @@ let package = Package(
             // build-app.sh puts Sparkle.framework in Contents/Frameworks; `swift run` finds it next to the binary.
             linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks",
                                            "-Xlinker", "-rpath", "-Xlinker", "@loader_path"])]
-        )
+        ),
+        .testTarget(name: "PasterooTests", dependencies: ["Pasteroo"]),
     ],
     swiftLanguageModes: [.v5]
 )

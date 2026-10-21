@@ -10,6 +10,15 @@ open build/Pasteroo.app
 
 Bastano i Command Line Tools (`xcode-select --install`), Xcode non serve.
 
+## Test
+
+```sh
+swift test
+```
+
+I test usano XCTest, che arriva con Xcode: con i soli Command Line Tools non partono.
+Girano comunque su GitHub a ogni push e prima di ogni release.
+
 ## Release
 
 Gli aggiornamenti arrivano con [Sparkle 2](https://sparkle-project.org): l'app legge

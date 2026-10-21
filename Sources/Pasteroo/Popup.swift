@@ -13,19 +13,29 @@ private final class KeyPanel: NSPanel {
 @MainActor
 final class PopupModel: ObservableObject {
     let store: ClipStore
-    @Published var query = "" { didSet { selection = 0 } }
+    @Published var query = "" { didSet { refresh(); selection = 0 } }
     @Published var selection = 0
+    /// Filtered once per query or history change, not on every redraw.
+    @Published private(set) var pinned: [Clip] = []
+    @Published private(set) var recent: [Clip] = []
     private var bag: AnyCancellable?
 
     init(store: ClipStore) {
         self.store = store
+        refresh()
         bag = store.objectWillChange.sink { [weak self] in
-            DispatchQueue.main.async { self?.clampSelection() }
+            // objectWillChange fires before the change; read the store once it has landed.
+            DispatchQueue.main.async {
+                self?.refresh()
+                self?.clampSelection()
+            }
         }
     }
 
-    var pinned: [Clip] { store.pinned(matching: query) }
-    var recent: [Clip] { store.recent(matching: query) }
+    private func refresh() {
+        pinned = store.pinned(matching: query)
+        recent = store.recent(matching: query)
+    }
     /// Pinned first, then recent: the order used by arrows and ⌘1–⌘9.
     var items: [Clip] { pinned + recent }
 
@@ -274,7 +284,7 @@ struct PopupView: View {
                 .font(Theme.title(17))
                 .focused($searchFocused)
 
-            Text("\(model.items.count)")
+            Text("\(model.pinned.count + model.recent.count)")
                 .font(Theme.label(11))
                 .foregroundStyle(Theme.inkSoft)
             KeyHint(text: hotKey)

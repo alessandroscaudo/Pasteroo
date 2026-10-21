@@ -1,0 +1,14 @@
+# Runs the tests on every push and pull request. Needs Xcode (XCTest), which the runner has.
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - run: swift test

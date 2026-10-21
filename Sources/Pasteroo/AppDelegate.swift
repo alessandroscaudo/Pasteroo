@@ -54,6 +54,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         DebugSnapshot.runIfRequested(store: store)
     }
 
+    func applicationWillTerminate(_ notification: Notification) {
+        store.saveNow()
+    }
+
     func reloadHotKey() {
         hotKey.register(keyCode: Prefs.int(Prefs.hotKeyCode), carbonModifiers: Prefs.int(Prefs.hotKeyModifiers))
     }
