@@ -236,7 +236,7 @@ struct CircleButton: View {
         }
         .buttonStyle(.plain)
         .glass(Circle(), tint: active ? Theme.green : .white.opacity(0.3), interactive: true)
-        .help(help)
+        .help(L(help))
     }
 }
 

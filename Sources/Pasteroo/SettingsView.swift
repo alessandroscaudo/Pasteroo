@@ -34,7 +34,7 @@ struct SettingsView: View {
             rail
             VStack(alignment: .leading, spacing: 14) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(pane.title).font(Theme.title(28))
+                    Text(L(pane.title)).font(Theme.title(28))
                     Text("pasteroo · v \(Bundle.main.shortVersion)")
                         .font(Theme.label()).foregroundStyle(Theme.inkSoft)
                 }
@@ -94,9 +94,9 @@ private struct Row<Trailing: View>: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(Theme.title(14))
+                    Text(L(title)).font(Theme.title(14))
                     if let detail {
-                        Text(detail).font(Theme.label(9.5)).foregroundStyle(Theme.inkSoft)
+                        Text(L(detail)).font(Theme.label(9.5)).foregroundStyle(Theme.inkSoft)
                     }
                 }
                 Spacer()
@@ -213,7 +213,7 @@ private struct PillButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(title, action: action)
+        Button(L(title), action: action)
             .buttonStyle(.plain)
             .font(Theme.label(11))
             .foregroundStyle(.white)
@@ -230,7 +230,7 @@ private struct ShortcutRecorder: View {
 
     var body: some View {
         Button { recording ? stop() : start() } label: {
-            Text(recording ? (refused ? "not available, try another" : "type shortcut…") : display)
+            Text(recording ? L(refused ? "not available, try another" : "type shortcut…") : display)
                 .font(Theme.label(12))
                 .foregroundStyle(recording ? .white : Theme.ink)
                 .padding(.horizontal, 14).frame(height: 28)
@@ -363,13 +363,13 @@ private struct HistoryPane: View {
                 Spacer()
                 pillButton("Delete selected", enabled: !selection.isEmpty) {
                     let n = selection.count
-                    if confirm(n == 1 ? "Delete the selected clipping?" : "Delete \(n) selected clippings?") {
+                    if confirm(n == 1 ? L("Delete the selected clipping?") : L("Delete %d selected clippings?", n)) {
                         store.delete(ids: selection)
                         selection = []
                     }
                 }
                 pillButton("Delete all", enabled: !store.clips.isEmpty) {
-                    if confirm("Delete all \(store.clips.count) clippings, pinned included?") {
+                    if confirm(L("Delete all %d clippings, pinned included?", store.clips.count)) {
                         store.deleteAll(includingPinned: true)
                         selection = []
                     }
@@ -393,7 +393,7 @@ private struct HistoryPane: View {
                     .frame(width: 22, height: 22).contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(clip.isPinned ? "Unpin" : "Pin")
+            .help(L(clip.isPinned ? "Unpin" : "Pin"))
         }
         .padding(.horizontal, 12).padding(.vertical, 7)
         .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -410,7 +410,7 @@ private struct HistoryPane: View {
 
     private func pillButton(_ title: String, enabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(title).font(Theme.label(11))
+            Text(L(title)).font(Theme.label(11))
                 .padding(.horizontal, 12).frame(height: 28)
                 .contentShape(Capsule())
         }

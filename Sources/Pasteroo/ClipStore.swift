@@ -22,7 +22,7 @@ struct Clip: Codable, Identifiable, Hashable {
             .components(separatedBy: .newlines)
             .first ?? ""
         let collapsed = line.replacingOccurrences(of: "\t", with: " ")
-        guard collapsed.count > length else { return collapsed.isEmpty ? "(whitespace)" : collapsed }
+        guard collapsed.count > length else { return collapsed.isEmpty ? L("(whitespace)") : collapsed }
         return String(collapsed.prefix(length)) + "…"
     }
 

@@ -1,0 +1,86 @@
+/* Italian. Keys are the English strings used in the code. */
+
+/* Menu bar menu */
+"Your clippings will appear here…" = "Qui compariranno gli elementi che copi…";
+"Pinned" = "Fissati";
+"Recent" = "Recenti";
+"Open Pasteroo" = "Apri Pasteroo";
+"Record Clipboard History" = "Registra la cronologia";
+"Clear History…" = "Svuota la cronologia…";
+"Settings…" = "Impostazioni…";
+"Check for Updates…" = "Controlla aggiornamenti…";
+"Quit Pasteroo" = "Esci da Pasteroo";
+
+/* Alerts */
+"Rename clipping" = "Rinomina elemento";
+"Leave empty to show the clipping's first line." = "Lascia vuoto per mostrare la prima riga dell'elemento.";
+"Rename" = "Rinomina";
+"Cancel" = "Annulla";
+"Delete" = "Elimina";
+"Delete %d recent clippings?" = "Eliminare i %d elementi recenti?";
+"Pinned clippings are kept." = "Gli elementi fissati restano.";
+"This action cannot be undone." = "L'operazione non si può annullare.";
+
+/* Popup */
+"(whitespace)" = "(spazi)";
+"recording" = "in registrazione";
+"paused" = "in pausa";
+"Pause recording (private mode)" = "Metti in pausa (modalità privata)";
+"Resume recording" = "Riprendi la registrazione";
+"Settings  ⌘," = "Impostazioni  ⌘,";
+"Search clippings" = "Cerca negli appunti";
+"pinned" = "fissati";
+"recent" = "recenti";
+"Paste" = "Incolla";
+"Copy" = "Copia";
+"Pin" = "Fissa";
+"Unpin" = "Togli dai fissati";
+"Rename…" = "Rinomina…";
+"paste" = "incolla";
+"copy" = "copia";
+"pin" = "fissa";
+"rename" = "rinomina";
+"delete" = "elimina";
+"Clipping" = "Elemento";
+"Pin  ⌘P" = "Fissa  ⌘P";
+"Unpin  ⌘P" = "Togli dai fissati  ⌘P";
+"Rename  ⌘R" = "Rinomina  ⌘R";
+"Copy without pasting  ⌥↵" = "Copia senza incollare  ⌥↵";
+"Delete  ⌘⌫" = "Elimina  ⌘⌫";
+"%d chars · %d line" = "%d caratteri · %d riga";
+"%d chars · %d lines" = "%d caratteri · %d righe";
+"No matches" = "Nessun risultato";
+
+/* Settings */
+"General" = "Generali";
+"Ignored apps" = "App ignorate";
+"History" = "Cronologia";
+"Back to clippings  esc" = "Torna agli appunti  esc";
+"global shortcut for the popup" = "scorciatoia globale per il pannello";
+"Record clipboard history" = "Registra la cronologia";
+"off = private mode" = "spento = modalità privata";
+"Clipboard access" = "Accesso agli appunti";
+"asked on every copy · allow, then restart" = "chiesto a ogni copia · consenti, poi riavvia";
+"Open settings" = "Apri impostazioni";
+"Restart" = "Riavvia";
+"Start at login" = "Avvia al login";
+"Remember" = "Ricorda";
+"pinned clippings never expire" = "gli elementi fissati non scadono mai";
+"Show in menu bar menu" = "Mostra nel menu della barra";
+"Title length" = "Lunghezza del titolo";
+"characters" = "caratteri";
+"Paste after choosing" = "Incolla dopo la scelta";
+"needs accessibility permission" = "serve il permesso Accessibilità";
+"Grant" = "Consenti";
+"Confirm before deleting" = "Chiedi conferma prima di eliminare";
+"not available, try another" = "non disponibile, provane un'altra";
+"type shortcut…" = "premi la scorciatoia…";
+"Nothing copied while these apps are in front is recorded. Content marked as concealed, like passwords, is always skipped." = "Quello che copi mentre queste app sono in primo piano non viene registrato. I contenuti segnati come riservati, come le password, vengono sempre ignorati.";
+"Remove" = "Rimuovi";
+"Add app" = "Aggiungi app";
+"%lld pinned · %lld recent" = "%lld fissati · %lld recenti";
+"Delete selected" = "Elimina selezionati";
+"Delete all" = "Elimina tutto";
+"Delete the selected clipping?" = "Eliminare l'elemento selezionato?";
+"Delete %d selected clippings?" = "Eliminare i %d elementi selezionati?";
+"Delete all %d clippings, pinned included?" = "Eliminare tutti i %d elementi, compresi quelli fissati?";

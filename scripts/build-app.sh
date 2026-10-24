@@ -18,6 +18,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp "$PRODUCTS/Pasteroo" "$APP/Contents/MacOS/Pasteroo"
 ditto "$PRODUCTS/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
+cp -R Resources/*.lproj "$APP/Contents/Resources/"
 
 # App icon: the binary renders the 1024 px artwork, sips scales it into an iconset.
 ICONSET="$(mktemp -d)/AppIcon.iconset"
@@ -34,6 +35,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <key>CFBundleDevelopmentRegion</key><string>en</string>
+  <key>CFBundleLocalizations</key><array><string>en</string><string>it</string></array>
   <key>CFBundleExecutable</key><string>Pasteroo</string>
   <key>CFBundleIdentifier</key><string>it.scaudo.pasteroo</string>
   <key>CFBundleName</key><string>Pasteroo</string>

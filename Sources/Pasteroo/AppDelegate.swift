@@ -67,14 +67,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
     func rename(_ clip: Clip) {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
-        alert.messageText = "Rename clipping"
-        alert.informativeText = "Leave empty to show the clipping's first line."
+        alert.messageText = L("Rename clipping")
+        alert.informativeText = L("Leave empty to show the clipping's first line.")
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 280, height: 24))
         field.stringValue = clip.name ?? ""
         field.placeholderString = clip.title(length: 40)
         alert.accessoryView = field
-        alert.addButton(withTitle: "Rename")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: L("Rename"))
+        alert.addButton(withTitle: L("Cancel"))
         alert.window.initialFirstResponder = field
         if alert.runModal() == .alertFirstButtonReturn {
             store.rename(clip.id, to: field.stringValue)
@@ -91,46 +91,46 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         let recent = store.recent.prefix(Prefs.int(Prefs.displayCount))
 
         if pinned.isEmpty && recent.isEmpty {
-            let empty = NSMenuItem(title: "Your clippings will appear here…", action: nil, keyEquivalent: "")
+            let empty = NSMenuItem(title: L("Your clippings will appear here…"), action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         }
         if !pinned.isEmpty {
-            menu.addItem(.sectionHeader(title: "Pinned"))
+            menu.addItem(.sectionHeader(title: L("Pinned")))
             for clip in pinned { menu.addItem(clipItem(clip, length: length, key: "")) }
             menu.addItem(.separator())
         }
         if !recent.isEmpty {
-            menu.addItem(.sectionHeader(title: "Recent"))
+            menu.addItem(.sectionHeader(title: L("Recent")))
             for (index, clip) in recent.enumerated() {
                 menu.addItem(clipItem(clip, length: length, key: index < 10 ? String((index + 1) % 10) : ""))
             }
         }
 
         menu.addItem(.separator())
-        let search = NSMenuItem(title: "Open Pasteroo  \(Prefs.hotKeyDisplayValue)", action: #selector(showPopup), keyEquivalent: "")
+        let search = NSMenuItem(title: L("Open Pasteroo") + "  " + Prefs.hotKeyDisplayValue, action: #selector(showPopup), keyEquivalent: "")
         search.target = self
         menu.addItem(search)
 
-        let record = NSMenuItem(title: "Record Clipboard History", action: #selector(toggleRecording), keyEquivalent: "")
+        let record = NSMenuItem(title: L("Record Clipboard History"), action: #selector(toggleRecording), keyEquivalent: "")
         record.target = self
         record.state = Prefs.bool(Prefs.recordHistory) ? .on : .off
         menu.addItem(record)
 
-        let clear = NSMenuItem(title: "Clear History…", action: #selector(clearHistory), keyEquivalent: "")
+        let clear = NSMenuItem(title: L("Clear History…"), action: #selector(clearHistory), keyEquivalent: "")
         clear.target = self
         clear.isEnabled = !store.recent.isEmpty
         menu.addItem(clear)
 
         menu.addItem(.separator())
-        let settings = NSMenuItem(title: "Settings…", action: #selector(showSettings), keyEquivalent: ",")
+        let settings = NSMenuItem(title: L("Settings…"), action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
-        let update = NSMenuItem(title: "Check for Updates…",
+        let update = NSMenuItem(title: L("Check for Updates…"),
                                 action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
         update.target = updater
         menu.addItem(update)
-        menu.addItem(NSMenuItem(title: "Quit Pasteroo", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: L("Quit Pasteroo"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 
     private func clipItem(_ clip: Clip, length: Int, key: String) -> NSMenuItem {
@@ -158,18 +158,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
     }
 
     @objc private func clearHistory() {
-        guard confirm("Delete \(store.recent.count) recent clippings?", detail: "Pinned clippings are kept.") else { return }
+        guard confirm(L("Delete %d recent clippings?", store.recent.count), detail: L("Pinned clippings are kept.")) else { return }
         store.deleteAll()
     }
 
-    func confirm(_ message: String, detail: String = "This action cannot be undone.") -> Bool {
+    func confirm(_ message: String, detail: String = L("This action cannot be undone.")) -> Bool {
         guard Prefs.bool(Prefs.confirmDelete) else { return true }
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.messageText = message
         alert.informativeText = detail
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: L("Delete"))
+        alert.addButton(withTitle: L("Cancel"))
         alert.buttons.first?.hasDestructiveAction = true
         return alert.runModal() == .alertFirstButtonReturn
     }

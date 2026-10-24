@@ -256,7 +256,7 @@ struct PopupView: View {
             Logo(size: 18)
             Text("Pasteroo").font(Theme.title(20))
             Spacer()
-            Text(recording ? "recording" : "paused")
+            Text(L(recording ? "recording" : "paused"))
                 .font(Theme.label())
                 .foregroundStyle(Theme.inkSoft)
             CircleButton(symbol: recording ? "pause" : "record.circle",
@@ -333,7 +333,7 @@ struct PopupView: View {
                 Button("Paste") { perform(.choose(clip, paste: true)) }
                 Button("Copy") { perform(.choose(clip, paste: false)) }
                 Divider()
-                Button(clip.isPinned ? "Unpin" : "Pin") { perform(.togglePin(clip)) }
+                Button(L(clip.isPinned ? "Unpin" : "Pin")) { perform(.togglePin(clip)) }
                 Button("Rename…") { perform(.rename(clip)) }
                 Divider()
                 Button("Delete", role: .destructive) { perform(.delete(clip)) }
@@ -355,7 +355,7 @@ struct PopupView: View {
     private func hint(_ key: String, _ label: String) -> some View {
         HStack(spacing: 5) {
             KeyHint(text: key)
-            Text(label).font(Theme.label()).foregroundStyle(Theme.inkSoft)
+            Text(L(label)).font(Theme.label()).foregroundStyle(Theme.inkSoft)
         }
     }
 }
@@ -365,7 +365,7 @@ private struct SectionLabel: View {
     let count: Int
     var body: some View {
         HStack(spacing: 6) {
-            Text(text).font(Theme.label(10)).textCase(.uppercase).tracking(1.2)
+            Text(L(text)).font(Theme.label(10)).textCase(.uppercase).tracking(1.2)
             Text("\(count)").font(Theme.label(10))
             Spacer()
         }
@@ -434,7 +434,7 @@ private struct PreviewCard: View {
                 HStack(spacing: 10) {
                     Bubble(size: 38, tint: .white.opacity(0.5)) { AppIcon(bundleID: clip.sourceBundleID, size: 22) }
                     VStack(alignment: .leading, spacing: 1) {
-                        Text(clip.name ?? clip.sourceName ?? "Clipping").font(Theme.title(16)).lineLimit(1)
+                        Text(clip.name ?? clip.sourceName ?? L("Clipping")).font(Theme.title(16)).lineLimit(1)
                         Text(clip.date.formatted(date: .abbreviated, time: .shortened))
                             .font(Theme.label()).foregroundStyle(Theme.inkSoft)
                     }
@@ -490,7 +490,7 @@ private struct PreviewCard: View {
 
     private func stats(_ clip: Clip) -> String {
         let lines = clip.text.components(separatedBy: .newlines).count
-        return "\(clip.text.count) chars · \(lines) \(lines == 1 ? "line" : "lines")"
+        return L(lines == 1 ? "%d chars · %d line" : "%d chars · %d lines", clip.text.count, lines)
     }
 
     private func looksLikeCode(_ text: String) -> Bool {
@@ -504,7 +504,7 @@ private struct EmptyState: View {
     var body: some View {
         VStack(spacing: 10) {
             Logo(size: 34).opacity(0.3)
-            Text(searching ? "No matches" : "Your clippings will appear here…")
+            Text(L(searching ? "No matches" : "Your clippings will appear here…"))
                 .font(Theme.title(14))
                 .foregroundStyle(Theme.inkSoft)
         }
