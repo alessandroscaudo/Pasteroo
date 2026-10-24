@@ -44,7 +44,7 @@ Copied something ten minutes ago and copied over it since? Press **⇧⌘V**, ty
 Pasteroo remembers the text you copy, without duplicates, and keeps the things you reuse every day pinned
 at the top. It runs in the menu bar with no Dock icon, and your history never leaves your Mac.
 
-The app speaks **English** and **Italian** and follows your macOS language.
+The app is in **English** and **Italian** and follows your macOS language.
 
 ## Quick start
 
@@ -172,5 +172,5 @@ folder `~/Library/Application Support/Pasteroo`.
 ---
 
 <div align="center">
-<sub>Made in Italy by <a href="https://github.com/alessandroscaudo">Alessandro Scaudo</a> · requires macOS 14 Sonoma or later</sub>
+<sub><a href="https://github.com/alessandroscaudo">Alessandro Scaudo</a><br/> · requires macOS 14 Sonoma or later</sub>
 </div>

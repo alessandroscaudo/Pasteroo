@@ -44,7 +44,7 @@ premi **Invio**: Pasteroo lo incolla direttamente nell'app in cui stai scrivendo
 Pasteroo ricorda i testi che copi, senza duplicati, e tiene in alto quelli che riusi ogni giorno. Sta nella
 barra dei menu, senza icona nel Dock, e la cronologia non lascia mai il tuo Mac.
 
-L'app parla **italiano** e **inglese** e segue la lingua di macOS.
+L'app è in **italiano** e **inglese** e segue la lingua di macOS.
 
 ## Per iniziare
 
@@ -175,5 +175,5 @@ elimina la cartella `~/Library/Application Support/Pasteroo`.
 ---
 
 <div align="center">
-<sub>Fatto in Italia da <a href="https://github.com/alessandroscaudo">Alessandro Scaudo</a> · richiede macOS 14 Sonoma o successivo</sub>
+<sub><a href="https://github.com/alessandroscaudo">Alessandro Scaudo</a><br/> · richiede macOS 14 Sonoma o successivo</sub>
 </div>
