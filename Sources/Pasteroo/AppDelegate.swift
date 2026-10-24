@@ -47,11 +47,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
                 self?.statusItem.button?.appearsDisabled = !Prefs.bool(Prefs.recordHistory)
             }
         }
-
-        let args = CommandLine.arguments
-        if args.contains("--show-popup") { popup.show() }
-        if args.contains("--show-settings") { showSettings() }
-        DebugSnapshot.runIfRequested(store: store)
     }
 
     func applicationWillTerminate(_ notification: Notification) {

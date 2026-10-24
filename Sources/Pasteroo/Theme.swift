@@ -38,16 +38,9 @@ private struct GlassSurface<S: InsettableShape>: ViewModifier {
     let shape: S
     let tint: Color?
     let interactive: Bool
-    @Environment(\.isSnapshot) private var isSnapshot
 
     func body(content: Content) -> some View {
-        if isSnapshot {
-            // ImageRenderer cannot draw backdrop effects; approximate with flat fills.
-            content
-                .background(shape.fill(tint ?? .clear))
-                .background(shape.fill(.white.opacity(0.3)))
-                .overlay(shape.strokeBorder(.white.opacity(0.7), lineWidth: 0.8))
-        } else if #available(macOS 26, *) {
+        if #available(macOS 26, *) {
             content.glassEffect(Glass.regular.tint(tint).interactive(interactive), in: shape)
         } else {
             content
@@ -58,29 +51,12 @@ private struct GlassSurface<S: InsettableShape>: ViewModifier {
     }
 }
 
-private struct SnapshotKey: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    /// True while rendering debug snapshots with ImageRenderer.
-    var isSnapshot: Bool {
-        get { self[SnapshotKey.self] }
-        set { self[SnapshotKey.self] = newValue }
-    }
-}
-
-/// ScrollView that degrades to a clipped stack in snapshots, which ImageRenderer can draw.
+/// ScrollView without indicators.
 struct Scroller<Content: View>: View {
     @ViewBuilder var content: Content
-    @Environment(\.isSnapshot) private var isSnapshot
 
     var body: some View {
-        if isSnapshot {
-            VStack(spacing: 0) { content; Spacer(minLength: 0) }.clipped()
-        } else {
-            ScrollView { content }.scrollIndicators(.never)
-        }
+        ScrollView { content }.scrollIndicators(.never)
     }
 }
 
@@ -115,12 +91,9 @@ struct BackdropBlur: NSViewRepresentable {
 /// Translucent gradient ground with faint flowing lines, as in the reference boards.
 /// Needs a window with a clear background for the blur to show through.
 struct WaveGround: View {
-    @Environment(\.isSnapshot) private var isSnapshot
-
     var body: some View {
         ZStack {
-            // ImageRenderer cannot draw the blur; a light fill stands in for the desktop.
-            if isSnapshot { Color.white } else { BackdropBlur() }
+            BackdropBlur()
             Theme.ground.opacity(0.6)
             RadialGradient(colors: [Theme.lilac.opacity(0.4), .clear],
                            center: .init(x: 0.85, y: 0.75), startRadius: 0, endRadius: 260)

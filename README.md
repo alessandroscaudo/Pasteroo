@@ -68,7 +68,3 @@ Accessibilità resta valido.
 Esci da Pasteroo (menu › **Quit Pasteroo**), sposta l'app nel Cestino e, se vuoi
 cancellare anche la cronologia, elimina la cartella
 `~/Library/Application Support/Pasteroo`.
-
----
-
-Vuoi compilarlo da te o pubblicare una release? Vedi [docs/SVILUPPO.md](docs/SVILUPPO.md).
