@@ -2,19 +2,35 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// Which pane the app window shows; owned by the app so menu items can open a pane directly.
+@MainActor
+final class PaneSelection: ObservableObject {
+    @Published var pane: SettingsView.Pane = .general
+}
+
+/// The app window: clipboard settings on top of the rail, disk tools below.
 struct SettingsView: View {
     @ObservedObject var store: ClipStore
+    @ObservedObject var selection: PaneSelection
     let confirm: (String) -> Bool
     var onBack: () -> Void = {}
+    // Scans live here, not in the panes, so switching panes does not kill a running scan.
+    @StateObject private var duplicates = ScanModel<[DuplicateGroup]>()
+    @StateObject private var cleanup = ScanModel<[FoundItem]>()
+    @StateObject private var apps = ScanModel<[FoundItem]>()
+    @StateObject private var leftovers = ScanModel<[FoundItem]>()
 
     enum Pane: String, CaseIterable {
-        case general, ignored, history
+        case general, ignored, history, duplicates, cleanup, uninstall
 
         var symbol: String {
             switch self {
             case .general: "slider.horizontal.3"
             case .ignored: "hand.raised"
             case .history: "clock"
+            case .duplicates: "photo.on.rectangle"
+            case .cleanup: "sparkles"
+            case .uninstall: "xmark.app"
             }
         }
 
@@ -23,11 +39,16 @@ struct SettingsView: View {
             case .general: "General"
             case .ignored: "Ignored apps"
             case .history: "History"
+            case .duplicates: "Duplicates"
+            case .cleanup: "Clean up"
+            case .uninstall: "Uninstall"
             }
         }
+
+        var isTool: Bool { [.duplicates, .cleanup, .uninstall].contains(self) }
     }
 
-    @Local private var pane: Pane = .general
+    private var pane: Pane { selection.pane }
 
     var body: some View {
         HStack(alignment: .top, spacing: 18) {
@@ -43,28 +64,28 @@ struct SettingsView: View {
                     case .general: GeneralPane()
                     case .ignored: IgnoredAppsPane()
                     case .history: HistoryPane(store: store, confirm: confirm)
+                    case .duplicates: DuplicatesPane(model: duplicates)
+                    case .cleanup: CleanupPane(model: cleanup)
+                    case .uninstall: UninstallPane(apps: apps, leftovers: leftovers)
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
         .padding(.top, 38).padding([.horizontal, .bottom], 22)
-        .frame(width: 640, height: 520)
+        .frame(minWidth: 680, minHeight: 520)
         .foregroundStyle(Theme.ink)
-        .background(WaveGround().ignoresSafeArea())
+        .background(Theme.ground.ignoresSafeArea())
     }
 
     private var rail: some View {
         VStack(spacing: 10) {
-            Bubble(size: 42, tint: .white.opacity(0.6)) { Logo(size: 18) }
+            Bubble(size: 42, tint: Theme.card) { Logo(size: 18) }
                 .padding(.bottom, 8)
-            GlassGroup(spacing: 10) {
-                VStack(spacing: 10) {
-                    ForEach(Pane.allCases, id: \.self) { item in
-                        CircleButton(symbol: item.symbol, help: item.title, active: pane == item, size: 38) {
-                            withAnimation(.snappy(duration: 0.2)) { pane = item }
-                        }
-                    }
+            ForEach(Pane.allCases, id: \.self) { item in
+                if item == .duplicates { Rectangle().fill(Theme.line).frame(width: 20, height: 1).padding(.vertical, 4) }
+                CircleButton(symbol: item.symbol, help: item.title, active: pane == item, size: 38) {
+                    withAnimation(.snappy(duration: 0.2)) { selection.pane = item }
                 }
             }
             Spacer()
@@ -74,13 +95,13 @@ struct SettingsView: View {
     }
 }
 
-/// Rounded glass card that groups settings rows.
+/// White rounded card that groups settings rows.
 private struct Card<Content: View>: View {
     @ViewBuilder var content: Content
     var body: some View {
         VStack(alignment: .leading, spacing: 0) { content }
             .padding(.horizontal, 16).padding(.vertical, 6)
-            .glass(RoundedRectangle(cornerRadius: 22, style: .continuous), tint: .white.opacity(0.35))
+            .surface(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 }
 
@@ -103,12 +124,12 @@ private struct Row<Trailing: View>: View {
                 trailing
             }
             .padding(.vertical, 9)
-            if divider { Rectangle().fill(Theme.ink.opacity(0.08)).frame(height: 1) }
+            if divider { Rectangle().fill(Theme.line.opacity(0.6)).frame(height: 1) }
         }
     }
 }
 
-/// − value + control drawn as a glass pill.
+/// − value + control drawn as a pill.
 private struct NumberPill: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
@@ -121,7 +142,7 @@ private struct NumberPill: View {
             button("plus") { value = min(range.upperBound, value + step) }
         }
         .padding(3)
-        .glass(Capsule(), tint: .white.opacity(0.3))
+        .surface(Capsule(), Theme.well)
     }
 
     private func button(_ symbol: String, _ action: @escaping () -> Void) -> some View {
@@ -130,7 +151,7 @@ private struct NumberPill: View {
                 .frame(width: 22, height: 22).contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .background(Circle().fill(.white.opacity(0.5)))
+        .background(Circle().fill(Theme.card))
     }
 }
 
@@ -158,10 +179,10 @@ private struct GeneralPane: View {
                         Row(title: "Clipboard access",
                             detail: "asked on every copy · allow, then restart") {
                             HStack(spacing: 8) {
-                                PillButton(title: "Open settings") {
+                                SmallPill(title: "Open settings") {
                                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Pasteboard")!)
                                 }
-                                PillButton(title: "Restart") { NSApp.relaunch() }
+                                SmallPill(title: "Restart") { NSApp.relaunch() }
                             }
                         }
                     }
@@ -185,7 +206,7 @@ private struct GeneralPane: View {
                     Row(title: "Paste after choosing", detail: trusted || !autoPaste ? nil : "needs accessibility permission") {
                         HStack(spacing: 8) {
                             if autoPaste && !trusted {
-                                PillButton(title: "Grant") {
+                                SmallPill(title: "Grant") {
                                     Paster.requestPermission()
                                     NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
                                 }
@@ -199,7 +220,7 @@ private struct GeneralPane: View {
                 }
             }
             .toggleStyle(.switch)
-            .tint(Theme.green)
+            .tint(Theme.accent)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             trusted = Paster.isTrusted
@@ -207,8 +228,8 @@ private struct GeneralPane: View {
     }
 }
 
-/// Small green capsule button for permission fixes.
-private struct PillButton: View {
+/// Small black capsule button for permission fixes.
+private struct SmallPill: View {
     let title: String
     let action: () -> Void
 
@@ -218,7 +239,7 @@ private struct PillButton: View {
             .font(Theme.label(11))
             .foregroundStyle(.white)
             .padding(.horizontal, 12).frame(height: 24)
-            .background(Capsule().fill(Theme.orb))
+            .surface(Capsule(), Theme.ink)
     }
 }
 
@@ -232,12 +253,11 @@ private struct ShortcutRecorder: View {
         Button { recording ? stop() : start() } label: {
             Text(recording ? L(refused ? "not available, try another" : "type shortcut…") : display)
                 .font(Theme.label(12))
-                .foregroundStyle(recording ? .white : Theme.ink)
                 .padding(.horizontal, 14).frame(height: 28)
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .glass(Capsule(), tint: recording ? Theme.green : .white.opacity(0.4), interactive: true)
+        .surface(Capsule(), recording ? Theme.accent : Theme.well)
     }
 
     private func start() {
@@ -287,7 +307,7 @@ private struct IgnoredAppsPane: View {
                 VStack(spacing: 6) {
                     ForEach(apps) { app in
                         HStack(spacing: 10) {
-                            Bubble(size: 30, tint: .white.opacity(0.4)) { AppIcon(bundleID: app.bundleID, size: 18) }
+                            Bubble(size: 30) { AppIcon(bundleID: app.bundleID, size: 18) }
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(app.name).font(Theme.title(14))
                                 Text(app.bundleID).font(Theme.label(9.5)).foregroundStyle(Theme.inkSoft)
@@ -298,21 +318,12 @@ private struct IgnoredAppsPane: View {
                             }
                         }
                         .padding(7)
-                        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(.white.opacity(0.25)))
+                        .surface(RoundedRectangle(cornerRadius: 20, style: .continuous))
                     }
                 }
             }
 
-            Button(action: addApp) {
-                Label("Add app", systemImage: "plus")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16).frame(height: 32)
-                    .background(Capsule().fill(Theme.orb))
-                    .contentShape(Capsule())
-            }
-            .buttonStyle(.plain)
-            .shadow(color: Theme.green.opacity(0.45), radius: 6, y: 2)
+            PillButton(title: "Add app", symbol: "plus", action: addApp)
         }
         .onChange(of: apps) { _, new in Prefs.ignored = new }
     }
@@ -347,7 +358,7 @@ private struct HistoryPane: View {
                 TextField("Search clippings", text: $query).textFieldStyle(.plain).font(Theme.title(14))
             }
             .padding(.horizontal, 14).frame(height: 36)
-            .glass(Capsule(), tint: .white.opacity(0.3))
+            .surface(Capsule())
 
             Scroller {
                 LazyVStack(spacing: 5) {
@@ -389,15 +400,14 @@ private struct HistoryPane: View {
             Button { store.togglePin(clip.id) } label: {
                 Image(systemName: clip.isPinned ? "pin.fill" : "pin")
                     .font(.system(size: 11))
-                    .foregroundStyle(clip.isPinned ? Theme.green : Theme.inkSoft)
+                    .foregroundStyle(clip.isPinned ? Theme.ink : Theme.inkSoft)
                     .frame(width: 22, height: 22).contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .help(L(clip.isPinned ? "Unpin" : "Pin"))
         }
         .padding(.horizontal, 12).padding(.vertical, 7)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous)
-            .fill(.white.opacity(isSelected ? 0.7 : 0.22)))
+        .surface(RoundedRectangle(cornerRadius: 14, style: .continuous), isSelected ? Theme.accent.opacity(0.45) : Theme.card)
         .contentShape(Rectangle())
         .onTapGesture {
             if NSEvent.modifierFlags.contains(.command) || NSEvent.modifierFlags.contains(.shift) {
@@ -415,7 +425,7 @@ private struct HistoryPane: View {
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .glass(Capsule(), tint: .white.opacity(0.35), interactive: true)
+        .surface(Capsule(), Theme.card)
         .opacity(enabled ? 1 : 0.45)
         .disabled(!enabled)
     }

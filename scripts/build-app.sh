@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.2.0}"
+VERSION="${VERSION:-0.3.0}"
 SIGN_ID="${SIGN_ID:-Pasteroo Self-Signed}"
 REPO="alessandroscaudo/Pasteroo"
 SPARKLE_PUBLIC_KEY="Gxq0hgrOo+ofaQHNRwNQaTa4z3dhIZQATSdtBybxAgg="

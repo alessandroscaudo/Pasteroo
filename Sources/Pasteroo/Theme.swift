@@ -1,53 +1,28 @@
 import AppKit
 import SwiftUI
 
-/// Visual language: lime-green gradient grounds, frosted glass pills, thin type,
-/// small monospaced labels. Glass uses Liquid Glass on macOS 26+, Material before.
+/// Visual language: flat light-grey ground, white rounded cards, pastel yellow for
+/// what is active or selected, black discs for primary actions, thin type.
 enum Theme {
-    static let green = Color(red: 0.47, green: 0.76, blue: 0.36)
-    static let lime = Color(red: 0.81, green: 0.86, blue: 0.37)
-    static let cream = Color(red: 0.91, green: 0.89, blue: 0.70)
-    static let lilac = Color(red: 0.81, green: 0.78, blue: 0.94)
-    static let ink = Color(red: 0.11, green: 0.12, blue: 0.10)
-    static let inkSoft = ink.opacity(0.55)
-
-    static let ground = LinearGradient(
-        stops: [
-            .init(color: green, location: 0),
-            .init(color: lime, location: 0.55),
-            .init(color: cream, location: 1),
-        ],
-        startPoint: .bottomLeading, endPoint: .topTrailing)
-
-    static let orb = RadialGradient(
-        colors: [Color(red: 0.72, green: 0.90, blue: 0.45), green],
-        center: .init(x: 0.35, y: 0.3), startRadius: 1, endRadius: 26)
+    static let ground = Color(white: 0.955)
+    static let card = Color.white
+    /// Second-level fill inside a card (rows, inputs).
+    static let well = Color(white: 0.925)
+    static let line = Color(white: 0.86)
+    static let accent = Color(red: 0.97, green: 0.97, blue: 0.48)
+    static let lilac = Color(red: 0.86, green: 0.85, blue: 0.95)
+    static let mist = Color(red: 0.81, green: 0.87, blue: 0.88)
+    static let ink = Color(white: 0.11)
+    static let inkSoft = ink.opacity(0.5)
 
     static func title(_ size: CGFloat = 15) -> Font { .system(size: size, weight: .light) }
     static func label(_ size: CGFloat = 10) -> Font { .system(size: size, weight: .regular, design: .monospaced) }
 }
 
 extension View {
-    /// Frosted glass surface in the given shape.
-    func glass<S: InsettableShape>(_ shape: S, tint: Color? = nil, interactive: Bool = false) -> some View {
-        modifier(GlassSurface(shape: shape, tint: tint, interactive: interactive))
-    }
-}
-
-private struct GlassSurface<S: InsettableShape>: ViewModifier {
-    let shape: S
-    let tint: Color?
-    let interactive: Bool
-
-    func body(content: Content) -> some View {
-        if #available(macOS 26, *) {
-            content.glassEffect(Glass.regular.tint(tint).interactive(interactive), in: shape)
-        } else {
-            content
-                .background(shape.fill(.ultraThinMaterial))
-                .background(shape.fill(tint ?? .clear))
-                .overlay(shape.strokeBorder(.white.opacity(0.55), lineWidth: 0.8))
-        }
+    /// Flat surface in the given shape. `tint` defaults to a white card.
+    func surface<S: InsettableShape>(_ shape: S, _ tint: Color = Theme.card) -> some View {
+        background(shape.fill(tint))
     }
 }
 
@@ -57,63 +32,6 @@ struct Scroller<Content: View>: View {
 
     var body: some View {
         ScrollView { content }.scrollIndicators(.never)
-    }
-}
-
-/// Container that lets neighbouring glass shapes blend on macOS 26+.
-struct GlassGroup<Content: View>: View {
-    var spacing: CGFloat = 12
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        if #available(macOS 26, *) {
-            GlassEffectContainer(spacing: spacing) { content }
-        } else {
-            content
-        }
-    }
-}
-
-/// Blurs whatever is behind the window, so the gradient on top reads as tinted glass.
-struct BackdropBlur: NSViewRepresentable {
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let view = NSVisualEffectView()
-        view.material = .popover
-        view.blendingMode = .behindWindow
-        view.state = .active
-        view.appearance = NSAppearance(named: .aqua)
-        return view
-    }
-
-    func updateNSView(_ view: NSVisualEffectView, context: Context) {}
-}
-
-/// Translucent gradient ground with faint flowing lines, as in the reference boards.
-/// Needs a window with a clear background for the blur to show through.
-struct WaveGround: View {
-    var body: some View {
-        ZStack {
-            BackdropBlur()
-            Theme.ground.opacity(0.6)
-            RadialGradient(colors: [Theme.lilac.opacity(0.4), .clear],
-                           center: .init(x: 0.85, y: 0.75), startRadius: 0, endRadius: 260)
-            Canvas { context, size in
-                for band in [0.18, 0.82] {
-                    for i in 0..<4 {
-                        var path = Path()
-                        let phase = Double(i) * 0.9
-                        let amp = 10 + Double(i) * 4
-                        let midY = size.height * band
-                        path.move(to: CGPoint(x: 0, y: midY))
-                        for x in stride(from: 0.0, through: size.width, by: 6) {
-                            let y = midY + sin(x / size.width * .pi * 2.2 + phase) * amp
-                            path.addLine(to: CGPoint(x: x, y: y))
-                        }
-                        context.stroke(path, with: .color(.white.opacity(0.22)), lineWidth: 0.8)
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -180,16 +98,16 @@ extension NSImage {
     }
 }
 
-/// Circular glass bubble holding an app icon or a symbol.
+/// Circular disc holding an app icon or a symbol.
 struct Bubble<Content: View>: View {
     var size: CGFloat = 34
-    var tint: Color? = .white.opacity(0.35)
+    var tint: Color = Theme.well
     @ViewBuilder var content: Content
 
     var body: some View {
         content
             .frame(width: size, height: size)
-            .glass(Circle(), tint: tint)
+            .surface(Circle(), tint)
     }
 }
 
@@ -218,11 +136,12 @@ struct AppIcon: View {
     }
 }
 
-/// Glass circle button with an SF Symbol.
+/// Circle button with an SF Symbol: pale by default, yellow when active, black when primary.
 struct CircleButton: View {
     let symbol: String
     var help: String = ""
     var active = false
+    var primary = false
     var size: CGFloat = 32
     let action: () -> Void
 
@@ -230,13 +149,38 @@ struct CircleButton: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size * 0.4, weight: .regular))
-                .foregroundStyle(active ? .white : Theme.ink)
+                .foregroundStyle(primary ? .white : Theme.ink)
                 .frame(width: size, height: size)
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .glass(Circle(), tint: active ? Theme.green : .white.opacity(0.3), interactive: true)
+        .surface(Circle(), primary ? Theme.ink : active ? Theme.accent : Theme.well)
         .help(L(help))
+    }
+}
+
+/// Black capsule with white text: the one primary action of a view.
+struct PillButton: View {
+    let title: String
+    var symbol: String? = nil
+    var enabled = true
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                if let symbol { Image(systemName: symbol) }
+                Text(L(title))
+            }
+            .font(.system(size: 12.5, weight: .medium))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16).frame(height: 32)
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .surface(Capsule(), Theme.ink)
+        .opacity(enabled ? 1 : 0.35)
+        .disabled(!enabled)
     }
 }
 
@@ -248,6 +192,11 @@ struct KeyHint: View {
             .font(Theme.label(10))
             .foregroundStyle(Theme.inkSoft)
             .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(Capsule().fill(.white.opacity(0.35)))
+            .background(Capsule().fill(Theme.well))
     }
+}
+
+extension Int64 {
+    /// "1,2 GB" in the user's locale.
+    var bytes: String { ByteCountFormatter.string(fromByteCount: self, countStyle: .file) }
 }

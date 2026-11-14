@@ -84,3 +84,55 @@
 "Delete the selected clipping?" = "Eliminare l'elemento selezionato?";
 "Delete %d selected clippings?" = "Eliminare i %d elementi selezionati?";
 "Delete all %d clippings, pinned included?" = "Eliminare tutti i %d elementi, compresi quelli fissati?";
+
+/* Menu: tools */
+"Find Duplicate Photos…" = "Trova foto duplicate…";
+"Clean Up Disk…" = "Pulisci il disco…";
+"Uninstall an App…" = "Disinstalla un'app…";
+"Duplicates" = "Duplicati";
+"Clean up" = "Pulizia";
+"Uninstall" = "Disinstalla";
+
+/* Tools: shared */
+"Move %d items to the Trash?" = "Spostare %d elementi nel Cestino?";
+"Frees %@. You can put them back from the Trash." = "Libera %@. Puoi recuperarli dal Cestino.";
+"Move to Trash" = "Sposta nel Cestino";
+"Move %d to Trash" = "Sposta %d nel Cestino";
+"%d items could not be moved to the Trash" = "%d elementi non si sono potuti spostare nel Cestino";
+"Scan" = "Analizza";
+"Scan again" = "Analizza di nuovo";
+"Show in Finder" = "Mostra nel Finder";
+"Stop" = "Ferma";
+"Measuring…" = "Sto misurando…";
+"Nothing found" = "Niente da segnalare";
+"%d items · %@" = "%d elementi · %@";
+
+/* Tools: duplicates */
+"Finds files with identical contents even when their names differ, like photos recovered from a formatted disk. The oldest copy is kept; the others are ticked." = "Trova i file con contenuto identico anche se hanno nomi diversi, come le foto recuperate da un disco formattato. La copia più vecchia viene tenuta; le altre sono già spuntate.";
+"Choose folders…" = "Scegli cartelle…";
+"Photos and videos only" = "Solo foto e video";
+"No duplicates found" = "Nessun duplicato trovato";
+"%d groups · %@ reclaimable" = "%d gruppi · %@ recuperabili";
+"Listing files… %d" = "Elenco dei file… %d";
+"Comparing %d of %d" = "Confronto %d di %d";
+"%d identical files · %@ each" = "%d file identici · %@ ciascuno";
+
+/* Tools: clean up */
+"Caches & logs" = "Cache e log";
+"Build artifacts" = "Artefatti di build";
+"Installers" = "Installer";
+"Largest" = "Più grandi";
+"Per-app caches and logs from ~/Library. Apps rebuild them; signed-in sessions are not touched." = "Cache e log di ogni app in ~/Library. Le app li ricreano; le sessioni di accesso non vengono toccate.";
+"node_modules, .build, target, dist, build, DerivedData and friends. A build recreates them." = "node_modules, .build, target, dist, build, DerivedData e simili. Una build li ricrea.";
+"Disk images and packages left behind after installing." = "Immagini disco e pacchetti rimasti dopo l'installazione.";
+"What takes the most space in a folder. Open a folder to look inside it." = "Cosa occupa più spazio in una cartella. Apri una cartella per guardarci dentro.";
+"Enclosing folder" = "Cartella superiore";
+"Open folder" = "Apri cartella";
+
+/* Tools: uninstall */
+"All apps" = "Tutte le app";
+"The app and what it left in ~/Library. Untick anything you want to keep, like documents or settings." = "L'app e quello che ha lasciato in ~/Library. Togli la spunta a ciò che vuoi tenere, come documenti o impostazioni.";
+"Pick an app to see it with its caches, preferences and support files, then move them all to the Trash." = "Scegli un'app per vederla con le sue cache, preferenze e file di supporto, poi spostali tutti nel Cestino.";
+"Search apps" = "Cerca app";
+"Still running" = "Ancora in esecuzione";
+"Quit app" = "Esci dall'app";

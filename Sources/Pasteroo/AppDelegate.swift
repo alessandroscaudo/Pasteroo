@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         onRename: { [weak self] clip in self?.rename(clip) },
         onSettings: { [weak self] in self?.openSettings(returningToPopup: true) })
     private var settingsWindow: NSWindow?
+    private let paneSelection = PaneSelection()
     /// Whether closing settings brings the popup back.
     private var settingsReturnsToPopup = false
     /// App that was frontmost before settings activated Pasteroo; it gets focus back so pasting still works.
@@ -123,6 +124,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
         menu.addItem(clear)
 
         menu.addItem(.separator())
+        for (title, pane) in [(L("Find Duplicate Photos…"), SettingsView.Pane.duplicates),
+                              (L("Clean Up Disk…"), .cleanup), (L("Uninstall an App…"), .uninstall)] {
+            let item = NSMenuItem(title: title, action: #selector(showTool(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = pane.rawValue
+            menu.addItem(item)
+        }
+        menu.addItem(.separator())
         let settings = NSMenuItem(title: L("Settings…"), action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
@@ -176,21 +185,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
 
     @objc func showSettings() { openSettings(returningToPopup: false) }
 
+    @objc private func showTool(_ sender: NSMenuItem) {
+        paneSelection.pane = (sender.representedObject as? String).flatMap(SettingsView.Pane.init) ?? .duplicates
+        openSettings(returningToPopup: false)
+    }
+
     func openSettings(returningToPopup: Bool) {
         if settingsWindow == nil {
-            let view = SettingsView(store: store,
+            let view = SettingsView(store: store, selection: paneSelection,
                                     confirm: { [weak self] in self?.confirm($0) ?? false },
                                     onBack: { [weak self] in self?.backToPopup() })
                 .environment(\.colorScheme, .light)
             let window = NSWindow(contentViewController: NSHostingController(rootView: view))
             window.title = "Pasteroo"
-            window.styleMask = [.titled, .closable, .fullSizeContentView]
+            window.styleMask = [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView]
+            window.setContentSize(NSSize(width: 860, height: 600))
+            window.setFrameAutosaveName("Pasteroo")
             window.titlebarAppearsTransparent = true
             window.titleVisibility = .hidden
             window.isMovableByWindowBackground = true
             window.isReleasedWhenClosed = false
-            window.isOpaque = false
-            window.backgroundColor = .clear
             window.delegate = self
             window.center()
             settingsWindow = window

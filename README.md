@@ -101,6 +101,18 @@ Pasteroo checks for new versions and installs them when you agree.
 </tr>
 </table>
 
+## Disk tools
+
+Pasteroo also tidies the disk, from the same menu bar menu. Every tool shows what it found first, you
+untick what to keep, and the rest goes to the **Trash**, never deleted outright, so you can always put
+it back.
+
+| Tool | What it does |
+| --- | --- |
+| **Find Duplicate Photos…** | Finds files with identical contents even when their names differ, like photos recovered from a formatted disk that came back as `f0123456.jpg`. Pick one or more folders (an external disk too); the oldest copy of each photo is kept, the others are ticked for the Trash. Thumbnails let you check before you act. |
+| **Clean Up Disk…** | Four scans: per-app **caches and logs** in `~/Library`, **build artifacts** (`node_modules`, `.build`, `target`, `dist`, `DerivedData`…), leftover **installers** (`.dmg`, `.pkg`, `.iso`, `.xip`) and the **largest** items in any folder, with drill-down. |
+| **Uninstall an App…** | Pick an app and see it with its caches, preferences, containers and support files, then move them all to the Trash at once. |
+
 <div align="center">
 <img src="docs/assets/settings-en.png" alt="Pasteroo settings: shortcut, history, start at login, history size, paste after choosing" width="560" />
 </div>

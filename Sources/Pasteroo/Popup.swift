@@ -244,9 +244,9 @@ struct PopupView: View {
         }
         .padding(22)
         .frame(width: 780, height: 500)
-        .background(WaveGround())
+        .background(Theme.ground)
         .clipShape(shape)
-        .overlay(shape.strokeBorder(.white.opacity(0.5), lineWidth: 1))
+        .overlay(shape.strokeBorder(Theme.line, lineWidth: 1))
         .foregroundStyle(Theme.ink)
         .onAppear { searchFocused = true }
     }
@@ -266,18 +266,11 @@ struct PopupView: View {
         }
     }
 
-    /// Search pill with a green orb, after the reference's voice input.
     private var searchBar: some View {
         HStack(spacing: 12) {
-            ZStack {
-                Circle().fill(Theme.orb)
-                Circle().strokeBorder(.white.opacity(0.6), lineWidth: 1)
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(.white)
+            Bubble(size: 40, tint: Theme.accent) {
+                Image(systemName: "magnifyingglass").font(.system(size: 15, weight: .regular))
             }
-            .frame(width: 40, height: 40)
-            .shadow(color: Theme.green.opacity(0.5), radius: 8, y: 2)
 
             TextField("Search clippings", text: $model.query)
                 .textFieldStyle(.plain)
@@ -290,7 +283,7 @@ struct PopupView: View {
             KeyHint(text: hotKey)
         }
         .padding(.leading, 5).padding(.trailing, 14).padding(.vertical, 5)
-        .glass(Capsule(), tint: .white.opacity(0.25))
+        .surface(Capsule())
     }
 
     private var list: some View {
@@ -382,7 +375,7 @@ private struct ClipRow: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
         HStack(spacing: 10) {
-            Bubble(size: 32, tint: .white.opacity(selected ? 0.6 : 0.3)) {
+            Bubble(size: 32, tint: selected ? Theme.card : Theme.well) {
                 AppIcon(bundleID: clip.sourceBundleID, size: 18)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -396,19 +389,12 @@ private struct ClipRow: View {
             }
             Spacer(minLength: 6)
             if clip.isPinned {
-                Image(systemName: "pin.fill").font(.system(size: 10)).foregroundStyle(Theme.green)
+                Image(systemName: "pin.fill").font(.system(size: 10)).foregroundStyle(Theme.ink)
             }
             if index < 9 { KeyHint(text: "⌘\(index + 1)") }
         }
         .padding(.horizontal, 7).padding(.vertical, 6)
-        .background {
-            if selected {
-                shape.fill(.white.opacity(0.01)).glass(shape, tint: .white.opacity(0.55))
-                    .shadow(color: Theme.ink.opacity(0.08), radius: 10, y: 4)
-            } else {
-                shape.fill(.white.opacity(0.12))
-            }
-        }
+        .surface(shape, selected ? Theme.accent : Theme.card)
         .contentShape(shape)
         .animation(.snappy(duration: 0.15), value: selected)
     }
@@ -432,7 +418,7 @@ private struct PreviewCard: View {
         VStack(alignment: .leading, spacing: 12) {
             if let clip {
                 HStack(spacing: 10) {
-                    Bubble(size: 38, tint: .white.opacity(0.5)) { AppIcon(bundleID: clip.sourceBundleID, size: 22) }
+                    Bubble(size: 38) { AppIcon(bundleID: clip.sourceBundleID, size: 22) }
                     VStack(alignment: .leading, spacing: 1) {
                         Text(clip.name ?? clip.sourceName ?? L("Clipping")).font(Theme.title(16)).lineLimit(1)
                         Text(clip.date.formatted(date: .abbreviated, time: .shortened))
@@ -448,33 +434,22 @@ private struct PreviewCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(12)
                 }
-                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(.white.opacity(0.4)))
+                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Theme.well))
 
                 Text(stats(clip)).font(Theme.label()).foregroundStyle(Theme.inkSoft)
 
                 HStack(spacing: 8) {
-                    Button { perform(.choose(clip, paste: true)) } label: {
-                        Label("Paste", systemImage: "arrow.down.doc")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 16).frame(height: 32)
-                            .background(Capsule().fill(Theme.orb))
-                            .contentShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .shadow(color: Theme.green.opacity(0.45), radius: 6, y: 2)
+                    PillButton(title: "Paste", symbol: "arrow.down.doc") { perform(.choose(clip, paste: true)) }
                     Spacer()
-                    GlassGroup(spacing: 6) {
-                        HStack(spacing: 6) {
-                            CircleButton(symbol: clip.isPinned ? "pin.slash" : "pin",
-                                         help: clip.isPinned ? "Unpin  ⌘P" : "Pin  ⌘P",
-                                         active: clip.isPinned) { perform(.togglePin(clip)) }
-                            CircleButton(symbol: "pencil", help: "Rename  ⌘R") { perform(.rename(clip)) }
-                            CircleButton(symbol: "doc.on.doc", help: "Copy without pasting  ⌥↵") {
-                                perform(.choose(clip, paste: false))
-                            }
-                            CircleButton(symbol: "trash", help: "Delete  ⌘⌫") { perform(.delete(clip)) }
+                    HStack(spacing: 6) {
+                        CircleButton(symbol: clip.isPinned ? "pin.slash" : "pin",
+                                     help: clip.isPinned ? "Unpin  ⌘P" : "Pin  ⌘P",
+                                     active: clip.isPinned) { perform(.togglePin(clip)) }
+                        CircleButton(symbol: "pencil", help: "Rename  ⌘R") { perform(.rename(clip)) }
+                        CircleButton(symbol: "doc.on.doc", help: "Copy without pasting  ⌥↵") {
+                            perform(.choose(clip, paste: false))
                         }
+                        CircleButton(symbol: "trash", help: "Delete  ⌘⌫") { perform(.delete(clip)) }
                     }
                 }
             } else {
@@ -485,7 +460,7 @@ private struct PreviewCard: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .glass(shape, tint: .white.opacity(0.2))
+        .surface(shape)
     }
 
     private func stats(_ clip: Clip) -> String {

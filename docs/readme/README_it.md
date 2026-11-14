@@ -101,6 +101,18 @@ Pasteroo controlla da solo le nuove versioni e le installa quando sei d'accordo.
 </tr>
 </table>
 
+## Strumenti per il disco
+
+Dallo stesso menu nella barra, Pasteroo mette in ordine anche il disco. Ogni strumento mostra prima
+cosa ha trovato, tu togli la spunta a quello che vuoi tenere, e il resto finisce nel **Cestino**, mai
+eliminato direttamente: puoi sempre recuperarlo.
+
+| Strumento | Cosa fa |
+| --- | --- |
+| **Trova foto duplicate…** | Trova i file con contenuto identico anche se hanno nomi diversi, come le foto recuperate da un disco formattato e tornate come `f0123456.jpg`. Scegli una o più cartelle (anche un disco esterno); di ogni foto viene tenuta la copia più vecchia, le altre sono già spuntate per il Cestino. Le miniature ti fanno controllare prima di agire. |
+| **Pulisci il disco…** | Quattro analisi: **cache e log** di ogni app in `~/Library`, **artefatti di build** (`node_modules`, `.build`, `target`, `dist`, `DerivedData`…), **installer** dimenticati (`.dmg`, `.pkg`, `.iso`, `.xip`) e gli elementi **più grandi** di qualsiasi cartella, entrando nelle sottocartelle. |
+| **Disinstalla un'app…** | Scegli un'app e vedila insieme a cache, preferenze, container e file di supporto, poi spostali tutti nel Cestino in una volta. |
+
 <div align="center">
 <img src="../assets/settings-it.png" alt="Impostazioni di Pasteroo: scorciatoia, cronologia, avvio al login, dimensione della cronologia, incolla dopo la scelta" width="560" />
 </div>
