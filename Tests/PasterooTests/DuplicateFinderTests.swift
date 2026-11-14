@@ -5,7 +5,7 @@ import XCTest
 final class DuplicateFinderTests: XCTestCase {
     private var dir: URL!
 
-    override func setUp() throws {
+    override func setUpWithError() throws {
         dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     }
